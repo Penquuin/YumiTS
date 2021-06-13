@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "out/src/index.js",
   "scripts": {
+    "heroku-prebuild": "npm install --dev",
     "start": "node out/src/index.js",
     "watch": "tsc -p tsconfig.json -w",
     "test": "mocha -r ts-node/register \"tests/**/*.spec.ts\""
