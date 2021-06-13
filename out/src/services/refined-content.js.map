@@ -1,0 +1,1 @@
+{"version":3,"file":"refined-content.js","sourceRoot":"","sources":["../../../src/services/refined-content.ts"],"names":[],"mappings":";;;AAAA,MAAa,cAAc;IAGvB,YAAY,UAAkB;QAC1B,UAAU;QACV,IAAI,MAAM,GAAa,UAAU,CAAC,KAAK,CAAC,GAAG,CAAC,CAAC;QAC7C,IAAI,CAAC,OAAO,GAAG,MAAM,CAAC,CAAC,CAAC,CAAC;QACzB,MAAM,CAAC,KAAK,EAAE,CAAC;QACf,IAAI,CAAC,IAAI,GAAG,MAAM,CAAC;IACvB,CAAC;CACJ;AAVD,wCAUC"}
