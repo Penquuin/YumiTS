@@ -64,7 +64,13 @@ class Command {
                 return;
             }
             if (!this.commandFormat.Verify(rc)) {
-                easyReply(msg, `Correct Format:\n${this.getError()}`);
+                easyReply(msg, `Correct Format:\n${this.getError()}`)
+                    .then((sent) => {
+                    setTimeout(() => {
+                        msg.delete().catch();
+                        sent.delete().catch();
+                    }, 3000);
+                });
                 return;
             }
             this.callback(msg, rc);
