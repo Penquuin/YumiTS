@@ -11,39 +11,33 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bot = void 0;
 const discord_js_1 = require("discord.js");
 const inversify_1 = require("inversify");
 const types_1 = require("./types");
 const message_action_1 = require("./services/message-action");
+const reaction_handler_1 = require("./services/reaction-handler");
 let Bot = class Bot {
-<<<<<<< HEAD
-    constructor(client, token, messageAction) {
-        this.client = client;
-=======
     constructor(client, token, messageAction, reactionHandler) {
         const intents = new discord_js_1.Intents();
         intents.add('DIRECT_MESSAGES', 'GUILD_MESSAGES', 'GUILDS', 'GUILD_MEMBERS', 'GUILD_EMOJIS', 'GUILD_MESSAGE_REACTIONS', 'GUILD_PRESENCES');
         this.client = new discord_js_1.Client({ ws: { intents: intents } });
->>>>>>> e9055da (all out)
         this.token = token;
         this.messageAction = messageAction;
+        this.reactionHandler = reactionHandler;
     }
     listen() {
         this.client.on('message', (message) => {
             this.messageAction.handle(message).then().catch(() => { });
         });
-<<<<<<< HEAD
-        return this.client.login(this.token);
-=======
         this.client.on('ready', () => {
             console.log("Logged in!");
             this.setPresence();
             this.reactionHandler.intialize(this.client);
         });
         this.client.login(this.token);
->>>>>>> e9055da (all out)
     }
     /**
      * setPresence
@@ -64,7 +58,8 @@ Bot = __decorate([
     __param(0, inversify_1.inject(types_1.TYPES.Client)),
     __param(1, inversify_1.inject(types_1.TYPES.Token)),
     __param(2, inversify_1.inject(types_1.TYPES.MessageAction)),
-    __metadata("design:paramtypes", [discord_js_1.Client, String, message_action_1.MessageAction])
+    __param(3, inversify_1.inject(types_1.TYPES.ReactionHandler)),
+    __metadata("design:paramtypes", [discord_js_1.Client, String, typeof (_a = typeof message_action_1.MessageAction !== "undefined" && message_action_1.MessageAction) === "function" ? _a : Object, reaction_handler_1.ReactionHandler])
 ], Bot);
 exports.Bot = Bot;
 //# sourceMappingURL=bot.js.map
