@@ -18,15 +18,8 @@ const inversify_1 = require("inversify");
 const types_1 = require("./types");
 const message_action_1 = require("./services/message-action");
 let Bot = class Bot {
-<<<<<<< HEAD
     constructor(client, token, messageAction) {
         this.client = client;
-=======
-    constructor(client, token, messageAction, reactionHandler) {
-        const intents = new discord_js_1.Intents();
-        intents.add('DIRECT_MESSAGES', 'GUILD_MESSAGES', 'GUILDS', 'GUILD_MEMBERS', 'GUILD_EMOJIS', 'GUILD_MESSAGE_REACTIONS', 'GUILD_PRESENCES');
-        this.client = new discord_js_1.Client({ ws: { intents: intents } });
->>>>>>> e9055da (all out)
         this.token = token;
         this.messageAction = messageAction;
     }
@@ -34,16 +27,7 @@ let Bot = class Bot {
         this.client.on('message', (message) => {
             this.messageAction.handle(message).then().catch(() => { });
         });
-<<<<<<< HEAD
         return this.client.login(this.token);
-=======
-        this.client.on('ready', () => {
-            console.log("Logged in!");
-            this.setPresence();
-            this.reactionHandler.intialize(this.client);
-        });
-        this.client.login(this.token);
->>>>>>> e9055da (all out)
     }
     /**
      * setPresence
