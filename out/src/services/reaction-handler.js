@@ -19,6 +19,7 @@ exports.ReactionHandler = void 0;
 const discord_js_1 = require("discord.js");
 const inversify_1 = require("inversify");
 const constants_json_1 = require("../constants.json");
+const rrJSON = constants_json_1.Guilds.Friendz_Zone.ReactionRoles;
 let ReactionHandler = class ReactionHandler {
     constructor() {
         this.roles = {};
@@ -48,6 +49,9 @@ let ReactionHandler = class ReactionHandler {
                 break;
             case rr.ClosedDM.Emoji.Id:
                 this.securedAddRole(this.roles.ClosedDM, member);
+                break;
+            case rr.Minecraft.Emoji.Id:
+                this.securedAddRole(this.roles.Minecraft, member);
                 break;
             default:
                 break;
@@ -95,6 +99,9 @@ let ReactionHandler = class ReactionHandler {
             case constants_json_1.Guilds.Friendz_Zone.ReactionRoles.ClosedDM.Emoji.Id:
                 pseudo(this.roles.ClosedDM, member);
                 break;
+            case constants_json_1.Guilds.Friendz_Zone.ReactionRoles.Minecraft.Emoji.Id:
+                pseudo(this.roles.Minecraft, member);
+                break;
             default:
                 break;
         }
@@ -141,11 +148,23 @@ let ReactionHandler = class ReactionHandler {
     handleReactionCollector(message) {
         return __awaiter(this, void 0, void 0, function* () {
             const rr = constants_json_1.Guilds.Friendz_Zone.ReactionRoles;
+            const embed = new discord_js_1.MessageEmbed()
+                .setColor("#ffcccc")
+                .setTitle("身分組ROLES")
+                .setAuthor("Penquuin")
+                .setFooter("Service by Yumi with 💙")
+                .setDescription("以下說明可確保您通過反應為您選擇正確的角色\nThe following instructions ensure you to choose the right role for you via reactions.")
+                .addField("聊天區Friendz Zone", `${this.toEmojiFormat(rrJSON.Friendz.Emoji.Id, rrJSON.Friendz.Emoji.Name)}`, false)
+                .addField("第五人格Identity V", `${this.toEmojiFormat(rrJSON.IdentityV.Emoji.Id, rrJSON.IdentityV.Emoji.Name)}`, false)
+                .addField("讀書區Studying", `${this.toEmojiFormat(rrJSON.Studying.Emoji.Id, rrJSON.Studying.Emoji.Name)}`, false)
+                .addField("麥塊Minecraft", `${this.toEmojiFormat(rrJSON.Minecraft.Emoji.Id, rr.Minecraft.Emoji.Name)}`, false);
+            message.edit(embed);
             message.react(rr.Friendz.Emoji.Id);
             message.react(rr.IdentityV.Emoji.Id);
             message.react(rr.Studying.Emoji.Id);
+            message.react(rr.Minecraft.Emoji.Id);
             const filter = (reaction, _) => {
-                return [rr.Friendz.Emoji.Id, rr.IdentityV.Emoji.Id, rr.Studying.Emoji.Id].includes(reaction.emoji.id);
+                return [rr.Friendz.Emoji.Id, rr.IdentityV.Emoji.Id, rr.Studying.Emoji.Id, rr.Minecraft.Emoji.Id].includes(reaction.emoji.id);
             };
             const simCall = (add, r, user) => {
                 if (user.bot)
@@ -183,6 +202,7 @@ let ReactionHandler = class ReactionHandler {
         this.roles.Studying = guild.roles.cache.get(rr.Studying.Id);
         this.roles.OpenDM = guild.roles.cache.get(rr.OpenDM.Id);
         this.roles.ClosedDM = guild.roles.cache.get(rr.ClosedDM.Id);
+        this.roles.Minecraft = guild.roles.cache.get(rr.Minecraft.Id);
         //-----------
         const channel = guild.channels.cache.get(constants_json_1.Guilds.Friendz_Zone.ReactionChannel.Id);
         if (channel == null) {
@@ -257,7 +277,6 @@ let ReactionHandler = class ReactionHandler {
             }
             else {
                 console.log("No previous reaction message was found, proceed to create new one!");
-                const rrJSON = constants_json_1.Guilds.Friendz_Zone.ReactionRoles;
                 const embed = new discord_js_1.MessageEmbed()
                     .setColor("#ffcccc")
                     .setTitle("身分組ROLES")
@@ -266,7 +285,8 @@ let ReactionHandler = class ReactionHandler {
                     .setDescription("以下說明可確保您通過反應為您選擇正確的角色\nThe following instructions ensure you to choose the right role for you via reactions.")
                     .addField("聊天區Friendz Zone", `${this.toEmojiFormat(rrJSON.Friendz.Emoji.Id, rrJSON.Friendz.Emoji.Name)}`, false)
                     .addField("第五人格Identity V", `${this.toEmojiFormat(rrJSON.IdentityV.Emoji.Id, rrJSON.IdentityV.Emoji.Name)}`, false)
-                    .addField("讀書區Studying", `${this.toEmojiFormat(rrJSON.Studying.Emoji.Id, rrJSON.Studying.Emoji.Name)}`, false);
+                    .addField("讀書區Studying", `${this.toEmojiFormat(rrJSON.Studying.Emoji.Id, rrJSON.Studying.Emoji.Name)}`, false)
+                    .addField("麥塊Minecraft", `${this.toEmojiFormat(rrJSON.Minecraft.Emoji.Id, rr.Minecraft.Emoji.Name)}`, false);
                 channel.send(embed).then(msg => this.handleReactionCollector(msg));
             }
         }));
