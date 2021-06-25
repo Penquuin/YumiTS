@@ -23,6 +23,17 @@ const rrJSON = constants_json_1.Guilds.Friendz_Zone.ReactionRoles;
 let ReactionHandler = class ReactionHandler {
     constructor() {
         this.roles = {};
+        this.visEmbed = new discord_js_1.MessageEmbed()
+            .setColor("#ffcccc")
+            .setTitle("身分組ROLES")
+            .setAuthor("Penquuin")
+            .setFooter("Service by Yumi with 💙")
+            .setDescription("以下說明可確保您通過反應為您選擇正確的角色\nThe following instructions ensure you to choose the right role for you via reactions.")
+            .addField("聊天區Friendz Zone", `${this.toEmojiFormat(rrJSON.Friendz.Emoji.Id, rrJSON.Friendz.Emoji.Name)}`, false)
+            .addField("第五人格Identity V", `${this.toEmojiFormat(rrJSON.IdentityV.Emoji.Id, rrJSON.IdentityV.Emoji.Name)}`, false)
+            .addField("讀書區Studying", `${this.toEmojiFormat(rrJSON.Studying.Emoji.Id, rrJSON.Studying.Emoji.Name)}`, false)
+            .addField("麥塊Minecraft", `${this.toEmojiFormat(rrJSON.Minecraft.Emoji.Id, rrJSON.Minecraft.Emoji.Name)}`, false)
+            .addField("SKY光遇", `${this.toEmojiFormat(rrJSON.Sky.Emoji.Id, rrJSON.Sky.Emoji.Name)}`, false);
     }
     toEmojiFormat(Id, Name) {
         return `<:${Name}:${Id}>`;
@@ -33,29 +44,31 @@ let ReactionHandler = class ReactionHandler {
      * @param member Ok the member who reacted to this, simple.
      */
     conductFate(emoji_id, member) {
-        const rr = constants_json_1.Guilds.Friendz_Zone.ReactionRoles;
+        const found = this.getRoleFromEmojiId(emoji_id);
+        if (found) {
+            this.securedAddRole(found, member);
+        }
+    }
+    getRoleFromEmojiId(emoji_id) {
         switch (emoji_id) {
-            case rr.Friendz.Emoji.Id:
-                this.securedAddRole(this.roles.Friendz, member);
-                break;
-            case rr.IdentityV.Emoji.Id:
-                this.securedAddRole(this.roles.IdentityV, member);
-                break;
-            case rr.Studying.Emoji.Id:
-                this.securedAddRole(this.roles.Studying, member);
-                break;
-            case rr.OpenDM.Emoji.Id:
-                this.securedAddRole(this.roles.OpenDM, member);
-                break;
-            case rr.ClosedDM.Emoji.Id:
-                this.securedAddRole(this.roles.ClosedDM, member);
-                break;
-            case rr.Minecraft.Emoji.Id:
-                this.securedAddRole(this.roles.Minecraft, member);
-                break;
+            case rrJSON.Friendz.Emoji.Id:
+                return this.roles.Friendz;
+            case rrJSON.IdentityV.Emoji.Id:
+                return this.roles.IdentityV;
+            case rrJSON.Studying.Emoji.Id:
+                return this.roles.Studying;
+            case rrJSON.OpenDM.Emoji.Id:
+                return this.roles.OpenDM;
+            case rrJSON.ClosedDM.Emoji.Id:
+                return this.roles.ClosedDM;
+            case rrJSON.Minecraft.Emoji.Id:
+                return this.roles.Minecraft;
+            case rrJSON.Sky.Emoji.Id:
+                return this.roles.Sky;
             default:
                 break;
         }
+        return undefined;
     }
     securedAddRole(role, member, shutup) {
         const got = member.roles.cache.find((r) => r.id === role.id);
@@ -83,36 +96,17 @@ let ReactionHandler = class ReactionHandler {
         const pseudo = (role, mem) => {
             this.securedRemoveRole(role, mem, shutup);
         };
-        switch (emoji_id) {
-            case constants_json_1.Guilds.Friendz_Zone.ReactionRoles.Friendz.Emoji.Id:
-                pseudo(this.roles.Friendz, member);
-                break;
-            case constants_json_1.Guilds.Friendz_Zone.ReactionRoles.IdentityV.Emoji.Id:
-                pseudo(this.roles.IdentityV, member);
-                break;
-            case constants_json_1.Guilds.Friendz_Zone.ReactionRoles.Studying.Emoji.Id:
-                pseudo(this.roles.Studying, member);
-                break;
-            case constants_json_1.Guilds.Friendz_Zone.ReactionRoles.OpenDM.Emoji.Id:
-                pseudo(this.roles.OpenDM, member);
-                break;
-            case constants_json_1.Guilds.Friendz_Zone.ReactionRoles.ClosedDM.Emoji.Id:
-                pseudo(this.roles.ClosedDM, member);
-                break;
-            case constants_json_1.Guilds.Friendz_Zone.ReactionRoles.Minecraft.Emoji.Id:
-                pseudo(this.roles.Minecraft, member);
-                break;
-            default:
-                break;
+        const got = this.getRoleFromEmojiId(emoji_id);
+        if (got) {
+            pseudo(got, member);
         }
     }
     handleDMReaction(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            const rr = constants_json_1.Guilds.Friendz_Zone.ReactionRoles;
-            message.react(rr.ClosedDM.Emoji.Id);
-            message.react(rr.OpenDM.Emoji.Id);
+            message.react(rrJSON.ClosedDM.Emoji.Id);
+            message.react(rrJSON.OpenDM.Emoji.Id);
             const filter = (reaction, user) => {
-                return [rr.OpenDM.Emoji.Id, rr.ClosedDM.Emoji.Id].includes(reaction.emoji.id);
+                return [rrJSON.OpenDM.Emoji.Id, rrJSON.ClosedDM.Emoji.Id].includes(reaction.emoji.id);
             };
             this.client.on("messageReactionAdd", (r, user) => {
                 if (user.bot)
@@ -140,31 +134,21 @@ let ReactionHandler = class ReactionHandler {
                 const member = message.guild.members.cache.find((m) => m.user.id == user.id);
                 if (!member)
                     return;
-                let shutup = (member.roles.cache.has(rr.OpenDM.Id) && member.roles.cache.has(rr.ClosedDM.Id)) && true || false;
+                let shutup = (member.roles.cache.has(rrJSON.OpenDM.Id) && member.roles.cache.has(rrJSON.ClosedDM.Id)) && true || false;
                 this.removeFate(r.emoji.id, member, shutup);
             });
         });
     }
     handleReactionCollector(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            const rr = constants_json_1.Guilds.Friendz_Zone.ReactionRoles;
-            const embed = new discord_js_1.MessageEmbed()
-                .setColor("#ffcccc")
-                .setTitle("身分組ROLES")
-                .setAuthor("Penquuin")
-                .setFooter("Service by Yumi with 💙")
-                .setDescription("以下說明可確保您通過反應為您選擇正確的角色\nThe following instructions ensure you to choose the right role for you via reactions.")
-                .addField("聊天區Friendz Zone", `${this.toEmojiFormat(rrJSON.Friendz.Emoji.Id, rrJSON.Friendz.Emoji.Name)}`, false)
-                .addField("第五人格Identity V", `${this.toEmojiFormat(rrJSON.IdentityV.Emoji.Id, rrJSON.IdentityV.Emoji.Name)}`, false)
-                .addField("讀書區Studying", `${this.toEmojiFormat(rrJSON.Studying.Emoji.Id, rrJSON.Studying.Emoji.Name)}`, false)
-                .addField("麥塊Minecraft", `${this.toEmojiFormat(rrJSON.Minecraft.Emoji.Id, rr.Minecraft.Emoji.Name)}`, false);
-            message.edit(embed);
-            message.react(rr.Friendz.Emoji.Id);
-            message.react(rr.IdentityV.Emoji.Id);
-            message.react(rr.Studying.Emoji.Id);
-            message.react(rr.Minecraft.Emoji.Id);
+            message.edit(this.visEmbed);
+            message.react(rrJSON.Friendz.Emoji.Id);
+            message.react(rrJSON.IdentityV.Emoji.Id);
+            message.react(rrJSON.Studying.Emoji.Id);
+            message.react(rrJSON.Minecraft.Emoji.Id);
+            message.react(rrJSON.Sky.Emoji.Id);
             const filter = (reaction, _) => {
-                return [rr.Friendz.Emoji.Id, rr.IdentityV.Emoji.Id, rr.Studying.Emoji.Id, rr.Minecraft.Emoji.Id].includes(reaction.emoji.id);
+                return [rrJSON.Friendz.Emoji.Id, rrJSON.IdentityV.Emoji.Id, rrJSON.Studying.Emoji.Id, rrJSON.Minecraft.Emoji.Id, rrJSON.Sky.Emoji.Id].includes(reaction.emoji.id);
             };
             const simCall = (add, r, user) => {
                 if (user.bot)
@@ -196,13 +180,14 @@ let ReactionHandler = class ReactionHandler {
         this.client = client;
         const guild = client.guilds.cache.get(constants_json_1.Guilds.Friendz_Zone.Id);
         //ROLES FIRST
-        const rr = constants_json_1.Guilds.Friendz_Zone.ReactionRoles;
-        this.roles.IdentityV = guild.roles.cache.get(rr.IdentityV.Id);
-        this.roles.Friendz = guild.roles.cache.get(rr.Friendz.Id);
-        this.roles.Studying = guild.roles.cache.get(rr.Studying.Id);
-        this.roles.OpenDM = guild.roles.cache.get(rr.OpenDM.Id);
-        this.roles.ClosedDM = guild.roles.cache.get(rr.ClosedDM.Id);
-        this.roles.Minecraft = guild.roles.cache.get(rr.Minecraft.Id);
+        const rrJSON = constants_json_1.Guilds.Friendz_Zone.ReactionRoles;
+        this.roles.IdentityV = guild.roles.cache.get(rrJSON.IdentityV.Id);
+        this.roles.Friendz = guild.roles.cache.get(rrJSON.Friendz.Id);
+        this.roles.Studying = guild.roles.cache.get(rrJSON.Studying.Id);
+        this.roles.OpenDM = guild.roles.cache.get(rrJSON.OpenDM.Id);
+        this.roles.ClosedDM = guild.roles.cache.get(rrJSON.ClosedDM.Id);
+        this.roles.Minecraft = guild.roles.cache.get(rrJSON.Minecraft.Id);
+        this.roles.Sky = guild.roles.cache.get(rrJSON.Sky.Id);
         //-----------
         const channel = guild.channels.cache.get(constants_json_1.Guilds.Friendz_Zone.ReactionChannel.Id);
         if (channel == null) {
@@ -257,6 +242,7 @@ let ReactionHandler = class ReactionHandler {
             }
             if (visMsg !== undefined) {
                 //recover the one who reacted while the bot is offline
+                this.handleReactionCollector(visMsg);
                 visMsg.reactions.cache.forEach((Reaction) => {
                     const rum = Reaction.users;
                     rum.fetch().then(x => {
@@ -273,21 +259,9 @@ let ReactionHandler = class ReactionHandler {
                         });
                     });
                 });
-                this.handleReactionCollector(visMsg);
             }
             else {
-                console.log("No previous reaction message was found, proceed to create new one!");
-                const embed = new discord_js_1.MessageEmbed()
-                    .setColor("#ffcccc")
-                    .setTitle("身分組ROLES")
-                    .setAuthor("Penquuin")
-                    .setFooter("Service by Yumi with 💙")
-                    .setDescription("以下說明可確保您通過反應為您選擇正確的角色\nThe following instructions ensure you to choose the right role for you via reactions.")
-                    .addField("聊天區Friendz Zone", `${this.toEmojiFormat(rrJSON.Friendz.Emoji.Id, rrJSON.Friendz.Emoji.Name)}`, false)
-                    .addField("第五人格Identity V", `${this.toEmojiFormat(rrJSON.IdentityV.Emoji.Id, rrJSON.IdentityV.Emoji.Name)}`, false)
-                    .addField("讀書區Studying", `${this.toEmojiFormat(rrJSON.Studying.Emoji.Id, rrJSON.Studying.Emoji.Name)}`, false)
-                    .addField("麥塊Minecraft", `${this.toEmojiFormat(rrJSON.Minecraft.Emoji.Id, rr.Minecraft.Emoji.Name)}`, false);
-                channel.send(embed).then(msg => this.handleReactionCollector(msg));
+                channel.send(this.visEmbed).then(msg => this.handleReactionCollector(msg));
             }
         }));
     }
